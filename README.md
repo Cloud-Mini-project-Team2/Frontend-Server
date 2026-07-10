@@ -3,11 +3,16 @@
 포트폴리오 관리 웹사이트의 프론트엔드 레포지토리입니다.
 정적 HTML/CSS/JS로 구성되며, 각자 로컬에 구축한 Nginx 서버로 서빙합니다.
 
+<br> </br>
+
 ## 기술 스택
 
 - HTML / CSS / JavaScript (Vanilla)
 - Nginx (정적 파일 서빙 + FastAPI 리버스 프록시)
 - Backend: FastAPI (별도 레포) / DB: MariaDB
+
+<br> </br>
+
 
 ## 페이지 구성
 
@@ -22,6 +27,8 @@
 
 > 파일명은 실제 구현에 맞게 수정하세요.
 
+<br> </br>
+
 ## 디렉토리 구조
 
 ```
@@ -34,6 +41,8 @@
     └── default.conf   # Nginx 설정 예시
 ```
 
+<br> </br>
+
 ## 로컬 개발 환경 구축
 
 ### 1. 레포지토리 클론
@@ -42,6 +51,8 @@
 git clone https://github.com/<org>/<frontend-repo>.git
 cd <frontend-repo>
 ```
+
+<br> </br>
 
 ### 2. Nginx 설치 및 설정
 
@@ -70,6 +81,7 @@ server {
     }
 }
 ```
+<br> </br>
 
 ### 3. 적용
 
@@ -79,6 +91,8 @@ sudo systemctl reload nginx
 ```
 
 브라우저에서 `http://localhost` 접속 확인.
+
+<br> </br>
 
 ## 개발 워크플로우
 
@@ -102,6 +116,8 @@ style: 마이페이지 레이아웃 정리
 docs: README 수정
 ```
 
+<br> </br>
+
 ## API 연동
 
 - 백엔드 API 명세는 팀 Notion 참고
@@ -116,6 +132,8 @@ fetch('/api/auth/login', {
   body: JSON.stringify({ email, password }),
 });
 ```
+
+<br> </br>
 
 ## 주의사항
 
