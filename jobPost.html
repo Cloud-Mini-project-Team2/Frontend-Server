@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>채용 공고 - 취업 지원 서비스</title>
+<link rel="stylesheet" href="style.css">
+<style>
+  .filter-bar {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    flex-wrap: wrap;
+    margin-bottom: 18px;
+  }
+  .filter-bar select {
+    padding: 9px 12px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    font-size: 14px;
+    background: #fff;
+    min-width: 150px;
+  }
+  .filter-bar .spacer { flex: 1; }
+
+  .job-list { display: flex; flex-direction: column; gap: 12px; }
+  .job-card {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 16px 18px;
+  }
+  .job-main { flex: 1; min-width: 0; }
+  .job-top { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; flex-wrap: wrap; }
+  .job-company { font-weight: 700; font-size: 14px; }
+  .job-title {
+    font-size: 15px;
+    font-weight: 600;
+    margin: 2px 0 8px;
+    color: var(--text);
+  }
+  .job-meta {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    font-size: 13px;
+    color: var(--text-sub);
+  }
+  .job-meta span { display: flex; align-items: center; gap: 4px; }
+  .job-actions { flex-shrink: 0; display: flex; flex-direction: column; align-items: flex-end; gap: 8px; }
+  .deadline-soon { color: var(--danger); font-weight: 600; }
+
+  .badge-apply-pending { background: var(--bg); color: var(--text-sub); }
+  .badge-apply-done { background: #e6f7ef; color: var(--success); }
+
+  .collect-status {
+    font-size: 13px;
+    color: var(--text-sub);
+    margin-left: 4px;
+  }
+  .fail-banner {
+    display: none;
+    background: #fdeeec;
+    border: 1px solid #f5c6c0;
+    color: var(--danger);
+    padding: 10px 14px;
+    border-radius: 8px;
+    font-size: 13px;
+    margin-bottom: 16px;
+  }
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="topbar-inner">
+    <div class="logo">취업 지원 서비스</div>
+    <nav class="nav-links">
+      <a href="jobPost.html" class="active">채용 공고</a>
+      <a href="portfolio.html">포트폴리오</a>
+      <a href="userInfo.html">마이페이지</a>
+    </nav>
+  </div>
+</div>
+
+<div class="container">
+  <h1 class="page-title">채용 공고</h1>
+  <p class="page-desc">잡코리아, 사람인에서 수집한 채용 공고를 희망 조건 기준으로 확인해보세요.</p>
+
+  <div id="failBanner" class="fail-banner">공고 수집에 실패했습니다. 샘플 데이터로 대체하여 표시합니다.</div>
+
+  <div class="card">
+    <div class="filter-bar">
+      <select id="sourceFilter">
+        <option value="all">전체 출처</option>
+      </select>
+      <select id="jobPartFilter">
+        <option value="all">전체 직무</option>
+      </select>
+      <select id="regionFilter">
+        <option value="all">전체 지역</option>
+      </select>
+      <span class="collect-status" id="collectStatus"></span>
+      <div class="spacer"></div>
+      <button class="btn btn-primary" id="collectBtn">공고 수집하기</button>
+    </div>
+
+    <div class="job-list" id="jobList"></div>
+    <div class="empty-state" id="emptyState" style="display:none;">조건에 맞는 채용 공고가 없습니다.</div>
+  </div>
+</div>
+
+<script src="mock-data.js"></script>
+<script>
+  const sourceFilter = document.getElementById("sourceFilter");
+  const jobPartFilter = document.getElementById("jobPartFilter");
+  const regionFilter = document.getElementById("regionFilter");
+  const jobList = document.getElementById("jobList");
+  const emptyState = document.getElementById("emptyState");
+  const collectStatus = document.getElementById("collectStatus");
+  const collectBtn = document.getElementById("collectBtn");
+  const failBanner = document.getElementById("failBanner");
+
+  // 전체 수집 결과 (post_id UNIQUE 제약을 흉내내기 위해 배열로 관리)
+  let allJobs = [...MOCK_JOBS];
+  let applyStatusMap = loadApplyStatus();
+  let collectStep = 0;
+
+  // 출처(source) 필터 옵션 - DB값은 영문(JOBKOREA/SARAMIN), 화면은 한글 표기
+  Object.entries(SOURCE_LABELS).forEach(([value, label]) => {
+    const opt = document.createElement("option");
+    opt.value = value;
+    opt.textContent = label;
+    sourceFilter.appendChild(opt);
+  });
+
+  // 직무 필터 옵션 - 회원의 희망 직무(user_job_part)를 우선 표시
+  const memberPrefs = loadMemberPrefs();
+  POSITIONS.forEach((p) => {
+    const opt = document.createElement("option");
+    opt.value = p;
+    opt.textContent = p + (memberPrefs.user_job_part.includes(p) ? " (희망 직무)" : "");
+    jobPartFilter.appendChild(opt);
+  });
+  if (memberPrefs.user_job_part.length > 0) {
+    jobPartFilter.value = memberPrefs.user_job_part[0];
+  }
+
+  // 지역 필터 옵션 - 회원의 희망 지역(user_region) 우선 표시
+  REGION_OPTIONS.forEach((r) => {
+    const opt = document.createElement("option");
+    opt.value = r;
+    opt.textContent = r + (memberPrefs.user_region.includes(r) ? " (희망 지역)" : "");
+    regionFilter.appendChild(opt);
+  });
+
+  function daysLeft(deadline) {
+    const diff = Math.ceil((new Date(deadline) - new Date("2026-07-10")) / 86400000);
+    return diff;
+  }
+
+  function getApplyState(job) {
+    return applyStatusMap[job.post_id] || job.apply;
+  }
+
+  function toggleApply(postId) {
+    const current = applyStatusMap[postId] || allJobs.find((j) => j.post_id === postId).apply;
+    applyStatusMap[postId] = current === "APPLY" ? "PENDING" : "APPLY";
+    saveApplyStatus(applyStatusMap);
+    renderJobs();
+  }
+
+  function renderJobs() {
+    const source = sourceFilter.value;
+    const jobPart = jobPartFilter.value;
+    const region = regionFilter.value;
+
+    const filtered = allJobs.filter((job) => {
+      const matchSource = source === "all" || job.source === source;
+      const matchJobPart = jobPart === "all" || job.job_part === jobPart;
+      const matchRegion = region === "all" || job.region.includes(region);
+      return matchSource && matchJobPart && matchRegion;
+    });
+
+    jobList.innerHTML = "";
+    if (filtered.length === 0) {
+      emptyState.style.display = "block";
+      return;
+    }
+    emptyState.style.display = "none";
+
+    filtered.forEach((job) => {
+      const left = daysLeft(job.end_at);
+      const applyState = getApplyState(job);
+      const card = document.createElement("div");
+      card.className = "card job-card";
+      card.innerHTML = `
+        <div class="job-main">
+          <div class="job-top">
+            <span class="badge ${job.source === "JOBKOREA" ? "badge-jobkorea" : "badge-saramin"}">${SOURCE_LABELS[job.source]}</span>
+            <span class="job-company">${job.company_name}</span>
+            <span class="badge ${applyState === "APPLY" ? "badge-apply-done" : "badge-apply-pending"}">${APPLY_LABELS[applyState]}</span>
+          </div>
+          <div class="job-title">${job.post_title}</div>
+          <div class="job-meta">
+            <span>📍 ${job.region}</span>
+            <span>🧑‍💻 ${job.personal_history}</span>
+            <span>🎓 ${job.edu_require}</span>
+            <span>🏢 ${job.emp_type}</span>
+            <span>💰 ${job.pay}</span>
+            <span class="${left <= 7 ? "deadline-soon" : ""}">⏰ 마감 ${job.end_at}${left >= 0 ? ` (D-${left})` : ""}</span>
+            <span>🏷 ${job.job_part}</span>
+          </div>
+        </div>
+        <div class="job-actions">
+          <button class="btn btn-sm" onclick="window.open('${job.job_url}', '_blank')">원문 보기 ↗</button>
+          <button class="btn btn-sm ${applyState === "APPLY" ? "" : "btn-primary"}" onclick="toggleApply('${job.post_id}')">${applyState === "APPLY" ? "지원 취소" : "지원 완료로 변경"}</button>
+        </div>
+      `;
+      jobList.appendChild(card);
+    });
+  }
+
+  sourceFilter.addEventListener("change", renderJobs);
+  jobPartFilter.addEventListener("change", renderJobs);
+  regionFilter.addEventListener("change", renderJobs);
+
+  collectBtn.addEventListener("click", () => {
+    failBanner.style.display = "none";
+    collectStatus.textContent = "수집 중...";
+    collectBtn.disabled = true;
+    setTimeout(() => {
+      collectBtn.disabled = false;
+      collectStatus.textContent = "";
+      collectStep += 1;
+      const next = EXTRA_JOBS_POOL[collectStep - 1];
+
+      if (!next) {
+        showToast("새로운 공고가 없습니다.");
+        return;
+      }
+
+      const isDuplicate = allJobs.some((j) => j.post_id === next.post_id);
+      if (isDuplicate) {
+        showToast(`중복 공고 제거됨 (post_id: ${next.post_id})`);
+      } else {
+        allJobs.push({ ...next, crawled_at: "2026-07-10" });
+        renderJobs();
+        showToast(`신규 공고 ${next.company_name} - ${next.post_title} 수집 완료`);
+      }
+    }, 700);
+  });
+
+  renderJobs();
+</script>
+
+</body>
+</html>

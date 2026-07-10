@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>마이페이지 - 취업 지원 서비스</title>
+<link rel="stylesheet" href="style.css">
+<style>
+  .profile-head {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 6px;
+  }
+  .avatar {
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #6ea3ff, var(--primary));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    font-weight: 700;
+    font-size: 20px;
+  }
+  .profile-email { font-size: 13px; color: var(--text-sub); }
+  .info-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 10px 0;
+    border-bottom: 1px solid var(--border);
+    font-size: 14px;
+  }
+  .info-row:last-child { border-bottom: none; }
+  .info-row .label { color: var(--text-sub); }
+
+  .chip-list { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 14px; }
+  .chip {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 7px 12px;
+    border-radius: 999px;
+    border: 1px solid var(--border);
+    font-size: 13px;
+    cursor: pointer;
+    user-select: none;
+  }
+  .chip.selected {
+    background: #eaf1ff;
+    border-color: var(--primary);
+    color: var(--primary);
+    font-weight: 600;
+  }
+
+  .portfolio-summary {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+  }
+  .portfolio-summary .label { font-size: 13px; color: var(--text-sub); }
+  .portfolio-summary .name { font-weight: 600; font-size: 14px; }
+
+  .danger-zone { border: 1px solid #f5c6c0; }
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="topbar-inner">
+    <div class="logo">취업 지원 서비스</div>
+    <nav class="nav-links">
+      <a href="jobPost.html">채용 공고</a>
+      <a href="portfolio.html">포트폴리오</a>
+      <a href="userInfo.html" class="active">마이페이지</a>
+    </nav>
+  </div>
+</div>
+
+<div class="container">
+  <h1 class="page-title">마이페이지</h1>
+  <p class="page-desc">계정 정보, 희망 조건, 포트폴리오를 관리할 수 있습니다.</p>
+
+  <div class="card">
+    <div class="profile-head">
+      <div class="avatar" id="avatarInitial">?</div>
+      <div>
+        <div style="font-weight:700; font-size:16px;" id="userNickname"></div>
+        <div class="profile-email" id="userEmail"></div>
+      </div>
+    </div>
+    <div class="info-row"><span class="label">최근 관심 공고</span><span id="recentJobTitle">-</span></div>
+  </div>
+
+  <div class="section-title">희망 직무 / 지역</div>
+  <div class="card">
+    <p class="page-desc" style="margin-bottom:8px;">채용 공고 필터링에 사용됩니다. (복수 선택 가능)</p>
+    <div style="font-size:13px; font-weight:600; color:var(--text-sub); margin-bottom:8px;">희망 직무</div>
+    <div class="chip-list" id="jobPartList"></div>
+    <div style="font-size:13px; font-weight:600; color:var(--text-sub); margin-bottom:8px;">희망 지역</div>
+    <div class="chip-list" id="regionList"></div>
+  </div>
+
+  <div class="section-title">희망 근무 조건</div>
+  <div class="card">
+    <div class="row">
+      <div class="field">
+        <label>경력조건</label>
+        <select id="careerSelect"></select>
+      </div>
+      <div class="field">
+        <label>학력조건</label>
+        <select id="eduSelect"></select>
+      </div>
+    </div>
+    <div class="row">
+      <div class="field">
+        <label>고용형태</label>
+        <select id="empTypeSelect"></select>
+      </div>
+      <div class="field">
+        <label>희망 급여</label>
+        <select id="paySelect"></select>
+      </div>
+    </div>
+    <button class="btn btn-primary btn-sm" id="savePrefsBtn">희망 조건 저장</button>
+  </div>
+
+  <div class="section-title">포트폴리오 관리</div>
+  <div class="card">
+    <div class="portfolio-summary">
+      <div>
+        <div class="label">등록된 포트폴리오</div>
+        <div class="name" id="portfolioName">-</div>
+      </div>
+      <a class="btn btn-sm" href="portfolio.html">포트폴리오 관리 →</a>
+    </div>
+  </div>
+
+  <div class="section-title">계정 관리</div>
+  <div class="card" style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px;">
+    <div>
+      <div style="font-weight:600; font-size:14px;">로그아웃</div>
+      <div class="page-desc" style="margin:2px 0 0;">현재 계정에서 로그아웃합니다.</div>
+    </div>
+    <button class="btn" id="logoutBtn">로그아웃</button>
+  </div>
+
+  <div class="card danger-zone" style="display:flex; justify-content:space-between; align-items:center;">
+    <div>
+      <div style="font-weight:600; font-size:14px; color:var(--danger);">회원 탈퇴</div>
+      <div class="page-desc" style="margin:2px 0 0;">탈퇴 시 모든 계정 정보와 포트폴리오가 삭제되며 복구할 수 없습니다.</div>
+    </div>
+    <button class="btn btn-danger" id="withdrawBtn">회원 탈퇴</button>
+  </div>
+</div>
+
+<script src="mock-data.js"></script>
+<script>
+  document.getElementById("avatarInitial").textContent = MOCK_MEMBER.nickname.charAt(0).toUpperCase();
+  document.getElementById("userNickname").textContent = MOCK_MEMBER.nickname;
+  document.getElementById("userEmail").textContent = MOCK_MEMBER.email;
+
+  // job_id FK -> 최근 관심 등록한 공고 표시
+  const recentJob = MOCK_JOBS.find((j) => j.job_id === MOCK_MEMBER.job_id);
+  if (recentJob) {
+    document.getElementById("recentJobTitle").textContent = `${recentJob.company_name} - ${recentJob.post_title}`;
+  }
+
+  // portfolio_id FK -> 포트폴리오 요약
+  const portfolio = loadPortfolio();
+  document.getElementById("portfolioName").textContent = `${portfolio.projectTitle} (${portfolio.displayName})`;
+
+  // 희망 조건 로드
+  const prefs = loadMemberPrefs();
+  let selectedJobParts = new Set(prefs.user_job_part);
+  let selectedRegions = new Set(prefs.user_region);
+
+  const jobPartList = document.getElementById("jobPartList");
+  const regionList = document.getElementById("regionList");
+
+  function renderChips(container, options, selectedSet) {
+    container.innerHTML = "";
+    options.forEach((opt) => {
+      const chip = document.createElement("div");
+      chip.className = "chip" + (selectedSet.has(opt) ? " selected" : "");
+      chip.textContent = opt;
+      chip.addEventListener("click", () => {
+        if (selectedSet.has(opt)) selectedSet.delete(opt);
+        else selectedSet.add(opt);
+        renderChips(container, options, selectedSet);
+      });
+      container.appendChild(chip);
+    });
+  }
+  renderChips(jobPartList, POSITIONS, selectedJobParts);
+  renderChips(regionList, REGION_OPTIONS, selectedRegions);
+
+  function fillSelect(selectEl, options, currentValue) {
+    selectEl.innerHTML = "";
+    options.forEach((opt) => {
+      const el = document.createElement("option");
+      el.value = opt;
+      el.textContent = opt;
+      if (opt === currentValue) el.selected = true;
+      selectEl.appendChild(el);
+    });
+  }
+  fillSelect(document.getElementById("careerSelect"), CAREER_OPTIONS, prefs.user_personal_history);
+  fillSelect(document.getElementById("eduSelect"), EDU_OPTIONS, prefs.user_edu_require);
+  fillSelect(document.getElementById("empTypeSelect"), EMP_TYPE_OPTIONS, prefs.user_emp_type);
+  fillSelect(document.getElementById("paySelect"), PAY_OPTIONS, prefs.user_pay);
+
+  document.getElementById("savePrefsBtn").addEventListener("click", () => {
+    const newPrefs = {
+      user_job_part: Array.from(selectedJobParts),
+      user_region: Array.from(selectedRegions),
+      user_personal_history: document.getElementById("careerSelect").value,
+      user_edu_require: document.getElementById("eduSelect").value,
+      user_emp_type: document.getElementById("empTypeSelect").value,
+      user_pay: document.getElementById("paySelect").value,
+    };
+    saveMemberPrefs(newPrefs);
+    showToast("희망 조건이 저장되었습니다.");
+  });
+
+  document.getElementById("logoutBtn").addEventListener("click", () => {
+    showToast("로그아웃되었습니다.");
+  });
+
+  document.getElementById("withdrawBtn").addEventListener("click", () => {
+    if (confirm("정말 탈퇴하시겠습니까? 모든 데이터가 삭제되며 복구할 수 없습니다.")) {
+      localStorage.removeItem("mvp_portfolio");
+      localStorage.removeItem("mvp_member_prefs");
+      localStorage.removeItem("mvp_apply_status");
+      showToast("회원 탈퇴가 완료되었습니다.");
+    }
+  });
+</script>
+
+</body>
+</html>
