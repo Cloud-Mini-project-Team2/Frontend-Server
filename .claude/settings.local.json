@@ -1,0 +1,7 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(bash -n setup_nginx.sh)"
+    ]
+  }
+}
