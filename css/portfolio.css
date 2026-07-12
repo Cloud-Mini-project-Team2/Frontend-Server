@@ -1,0 +1,49 @@
+.profile-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+.avatar {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #6ea3ff, var(--primary));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-weight: 700;
+  font-size: 20px;
+}
+.profile-info { display: flex; gap: 14px; align-items: center; }
+.profile-name { font-size: 18px; font-weight: 700; }
+.profile-url { font-size: 13px; color: var(--text-sub); margin-top: 2px; }
+.profile-url a { color: var(--primary); }
+
+.view-row {
+  display: flex;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--border);
+  font-size: 14px;
+  gap: 12px;
+}
+.view-row:last-child { border-bottom: none; }
+.view-row .label { width: 110px; flex-shrink: 0; color: var(--text-sub); font-weight: 600; }
+.view-row .value { flex: 1; white-space: pre-line; }
+
+.cname-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+  margin-top: 10px;
+}
+.cname-table th, .cname-table td {
+  text-align: left;
+  padding: 8px 10px;
+  border: 1px solid var(--border);
+}
+.cname-table th { background: var(--bg); font-weight: 600; width: 90px; }
+
+.mode-actions { display: flex; gap: 8px; }
+#editSection { display: none; }

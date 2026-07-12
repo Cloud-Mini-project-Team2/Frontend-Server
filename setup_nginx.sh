@@ -63,13 +63,12 @@ mkdir -p "$WEB_ROOT"
 # 기존 nginx 기본 페이지 제거
 rm -f "$WEB_ROOT"/index.nginx-debian.html
 
-# 요구사항: html 파일 복사
-find "$SOURCE_DIR" -maxdepth 1 -type f -name "*.html" -exec cp -v {} "$WEB_ROOT"/ \;
+# html/ 폴더의 html 파일들은 URL 경로(/login.html 등)를 그대로 유지하기 위해
+# WEB_ROOT 최상위로 평탄화하여 복사
+find "${SOURCE_DIR}/html" -maxdepth 1 -type f -name "*.html" -exec cp -v {} "$WEB_ROOT"/ \;
 
-# html 페이지가 참조하는 정적 리소스(css/js)도 함께 복사
-find "$SOURCE_DIR" -maxdepth 1 -type f \( -name "*.css" -o -name "*.js" \) -exec cp -v {} "$WEB_ROOT"/ \;
-
-# css/js/assets 등 하위 폴더가 있는 경우 함께 복사
+# css/js/assets 등 하위 폴더는 그대로 하위 폴더 구조를 유지하며 복사
+# (html 파일이 href="css/x.css", src="js/x.js" 처럼 상대경로로 참조)
 for dir in css js assets images img fonts; do
   if [ -d "${SOURCE_DIR:?}/${dir}" ]; then
     cp -rv "${SOURCE_DIR}/${dir}" "$WEB_ROOT"/

@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>포트폴리오 - 취업 지원 서비스</title>
+<link rel="stylesheet" href="css/style.css">
+<link rel="stylesheet" href="css/portfolio.css">
+</head>
+<body>
+
+<div class="topbar">
+  <div class="topbar-inner">
+    <div class="logo">취업 지원 서비스</div>
+    <nav class="nav-links">
+      <a href="jobPost.html">채용 공고</a>
+      <a href="portfolio.html" class="active">포트폴리오</a>
+      <a href="userInfo.html">마이페이지</a>
+    </nav>
+  </div>
+</div>
+
+<div class="container">
+  <h1 class="page-title">내 포트폴리오</h1>
+  <p class="page-desc">포트폴리오 정보를 확인하고 편집할 수 있습니다. 저장 즉시 공개 URL에 반영됩니다.</p>
+
+  <!-- 조회 모드 -->
+  <div class="card" id="viewSection">
+    <div class="profile-head">
+      <div class="profile-info">
+        <div class="avatar" id="avatarInitial">?</div>
+        <div>
+          <div class="profile-name" id="viewName"></div>
+          <div class="profile-url">공개 URL: <a id="viewUrl" href="#" target="_blank"></a></div>
+        </div>
+      </div>
+      <button class="btn btn-primary" id="editBtn">편집</button>
+    </div>
+
+    <div class="view-row"><div class="label">소개 문구</div><div class="value" id="viewIntro"></div></div>
+    <div class="view-row"><div class="label">기술 스택</div><div class="value" id="viewSkills"></div></div>
+    <div class="view-row"><div class="label">프로젝트명</div><div class="value" id="viewProjectTitle"></div></div>
+    <div class="view-row"><div class="label">프로젝트 설명</div><div class="value" id="viewProjectDesc"></div></div>
+    <div class="view-row"><div class="label">GitHub</div><div class="value"><a id="viewGithub" href="#" target="_blank"></a></div></div>
+    <div class="view-row"><div class="label">연락처</div><div class="value" id="viewContact"></div></div>
+  </div>
+
+  <div class="card" style="margin-top:16px;">
+    <div class="section-title" style="margin-top:0;">개인 도메인 연결 (CNAME 안내)</div>
+    <p class="page-desc" style="margin-bottom:8px;">아래 값을 도메인 관리 사이트의 DNS 설정에 CNAME 레코드로 등록하면 개인 도메인으로 포트폴리오에 접속할 수 있습니다.</p>
+    <table class="cname-table">
+      <tr><th>타입</th><td>CNAME</td></tr>
+      <tr><th>이름</th><td>portfolio</td></tr>
+      <tr><th>값</th><td id="viewCname"></td></tr>
+    </table>
+  </div>
+
+  <!-- 편집 모드 -->
+  <div class="card" id="editSection">
+    <div class="profile-head">
+      <div class="page-title" style="margin:0;font-size:17px;">포트폴리오 편집</div>
+      <div class="mode-actions">
+        <button class="btn" id="cancelBtn">취소</button>
+        <button class="btn btn-primary" id="saveBtn">저장</button>
+      </div>
+    </div>
+
+    <div class="field">
+      <label>이름</label>
+      <input type="text" id="inputName">
+    </div>
+    <div class="field">
+      <label>소개 문구</label>
+      <textarea id="inputIntro"></textarea>
+    </div>
+    <div class="field">
+      <label>기술 스택 (쉼표로 구분)</label>
+      <input type="text" id="inputSkills">
+    </div>
+    <div class="row">
+      <div class="field">
+        <label>프로젝트명</label>
+        <input type="text" id="inputProjectTitle">
+      </div>
+      <div class="field">
+        <label>GitHub 링크</label>
+        <input type="text" id="inputGithub">
+      </div>
+    </div>
+    <div class="field">
+      <label>프로젝트 설명</label>
+      <textarea id="inputProjectDesc"></textarea>
+    </div>
+    <div class="field">
+      <label>연락처</label>
+      <input type="text" id="inputContact">
+    </div>
+    <div class="field">
+      <label>개인 도메인 CNAME 값</label>
+      <input type="text" id="inputCname">
+    </div>
+  </div>
+</div>
+
+<script src="js/mock-data.js"></script>
+<script src="js/portfolio.js"></script>
+
+</body>
+</html>

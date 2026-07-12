@@ -1,0 +1,58 @@
+.profile-head {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 6px;
+}
+.avatar {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #6ea3ff, var(--primary));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-weight: 700;
+  font-size: 20px;
+}
+.profile-email { font-size: 13px; color: var(--text-sub); }
+.info-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--border);
+  font-size: 14px;
+}
+.info-row:last-child { border-bottom: none; }
+.info-row .label { color: var(--text-sub); }
+
+.chip-list { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 14px; }
+.chip {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 12px;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  font-size: 13px;
+  cursor: pointer;
+  user-select: none;
+}
+.chip.selected {
+  background: #eaf1ff;
+  border-color: var(--primary);
+  color: var(--primary);
+  font-weight: 600;
+}
+
+.portfolio-summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+.portfolio-summary .label { font-size: 13px; color: var(--text-sub); }
+.portfolio-summary .name { font-weight: 600; font-size: 14px; }
+
+.danger-zone { border: 1px solid #f5c6c0; }

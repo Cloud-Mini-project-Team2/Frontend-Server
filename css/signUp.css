@@ -1,0 +1,35 @@
+.signup-wrap { max-width: 560px; }
+
+.chip-list { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 14px; }
+.chip {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 12px;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  font-size: 13px;
+  cursor: pointer;
+  user-select: none;
+}
+.chip.selected {
+  background: #eaf1ff;
+  border-color: var(--primary);
+  color: var(--primary);
+  font-weight: 600;
+}
+
+.group-label {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-sub);
+  margin-bottom: 8px;
+}
+
+.btn-submit {
+  width: 100%;
+  justify-content: center;
+  padding: 12px;
+  font-size: 15px;
+  margin-top: 20px;
+}

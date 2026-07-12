@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>채용 공고 - 취업 지원 서비스</title>
+<link rel="stylesheet" href="css/style.css">
+<link rel="stylesheet" href="css/jobPost.css">
+</head>
+<body>
+
+<div class="topbar">
+  <div class="topbar-inner">
+    <div class="logo">취업 지원 서비스</div>
+    <nav class="nav-links">
+      <a href="jobPost.html" class="active">채용 공고</a>
+      <a href="portfolio.html">포트폴리오</a>
+      <a href="userInfo.html">마이페이지</a>
+    </nav>
+  </div>
+</div>
+
+<div class="container">
+  <h1 class="page-title">채용 공고</h1>
+  <p class="page-desc">잡코리아, 사람인에서 수집한 채용 공고를 희망 조건 기준으로 확인해보세요.</p>
+
+  <div id="failBanner" class="fail-banner">공고 수집에 실패했습니다. 샘플 데이터로 대체하여 표시합니다.</div>
+
+  <div class="card">
+    <div class="filter-bar">
+      <select id="sourceFilter">
+        <option value="all">전체 출처</option>
+      </select>
+      <select id="jobPartFilter">
+        <option value="all">전체 직무</option>
+      </select>
+      <select id="regionFilter">
+        <option value="all">전체 지역</option>
+      </select>
+      <span class="collect-status" id="collectStatus"></span>
+      <div class="spacer"></div>
+      <button class="btn btn-primary" id="collectBtn">공고 수집하기</button>
+    </div>
+
+    <div class="job-list" id="jobList"></div>
+    <div class="empty-state" id="emptyState" style="display:none;">조건에 맞는 채용 공고가 없습니다.</div>
+  </div>
+</div>
+
+<script src="js/mock-data.js"></script>
+<script src="js/jobPost.js"></script>
+
+</body>
+</html>
