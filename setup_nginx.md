@@ -45,12 +45,11 @@ sudo BACKEND_PORT=9000 ./setup_nginx.sh
 ### 3. 정적 파일 복사
 현재 디렉토리(`SOURCE_DIR`)에서 다음을 `/var/www/html` 로 복사합니다.
 
-- `*.html` 파일 전체 (요구사항의 핵심)
-- 페이지들이 참조하는 `*.css`, `*.js` 파일 (예: `style.css`, `mock-data.js`)
-- `css/`, `js/`, `assets/`, `images/`, `img/`, `fonts/` 하위 폴더가 존재하면 함께 복사
+- `html/` 폴더의 `*.html` 파일 전체 — URL 경로(`/login.html` 등)를 그대로 유지하기 위해 `WEB_ROOT` 최상위로 평탄화하여 복사
+- `css/`, `js/`, `assets/`, `images/`, `img/`, `fonts/` 하위 폴더가 존재하면 폴더 구조를 유지한 채 함께 복사
 
-  > html만 복사하면 `<link rel="stylesheet" href="style.css">` 같은 참조가 깨지므로,
-  > 실제로 페이지가 정상 동작하도록 css/js 등 함께 필요한 정적 리소스도 복사하도록 했습니다.
+  > html 파일이 `href="css/style.css"`, `src="js/mock-data.js"` 처럼 상대경로로 참조하므로,
+  > css/js 폴더를 html과 같은 위치(`WEB_ROOT`)에 그대로 복사해야 참조가 깨지지 않습니다.
 
 또한 nginx 설치 시 기본으로 생성되는 `index.nginx-debian.html` 은 제거하여 우리 사이트가 바로 보이도록 합니다.
 
