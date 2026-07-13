@@ -8,7 +8,7 @@
   width: 56px;
   height: 56px;
   border-radius: 50%;
-  background: linear-gradient(135deg, #6ea3ff, var(--primary));
+  background: linear-gradient(135deg, var(--primary-light), var(--primary));
   display: flex;
   align-items: center;
   justify-content: center;

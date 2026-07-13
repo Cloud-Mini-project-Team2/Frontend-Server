@@ -1,24 +1,5 @@
-const jobPartList = document.getElementById("jobPartList");
-const regionList = document.getElementById("regionList");
-const selectedJobParts = new Set();
-const selectedRegions = new Set();
-
-function renderChips(container, options, selectedSet) {
-  container.innerHTML = "";
-  options.forEach((opt) => {
-    const chip = document.createElement("div");
-    chip.className = "chip" + (selectedSet.has(opt) ? " selected" : "");
-    chip.textContent = opt;
-    chip.addEventListener("click", () => {
-      if (selectedSet.has(opt)) selectedSet.delete(opt);
-      else selectedSet.add(opt);
-      renderChips(container, options, selectedSet);
-    });
-    container.appendChild(chip);
-  });
-}
-renderChips(jobPartList, POSITIONS, selectedJobParts);
-renderChips(regionList, REGION_OPTIONS, selectedRegions);
+const jobPartInput = document.getElementById("jobPartInput");
+const regionSelect = document.getElementById("regionSelect");
 
 function fillSelect(selectEl, options) {
   selectEl.innerHTML = "";
@@ -29,6 +10,7 @@ function fillSelect(selectEl, options) {
     selectEl.appendChild(el);
   });
 }
+fillSelect(regionSelect, REGION_OPTIONS);
 fillSelect(document.getElementById("careerSelect"), CAREER_OPTIONS);
 fillSelect(document.getElementById("paySelect"), PAY_OPTIONS);
 
@@ -52,19 +34,16 @@ document.getElementById("signupBtn").addEventListener("click", () => {
     showToast("닉네임은 영문/숫자/_ 2~20자로 입력해주세요.");
     return;
   }
-  if (selectedJobParts.size === 0) {
-    showToast("희망 직무를 1개 이상 선택해주세요.");
-    return;
-  }
-  if (selectedRegions.size === 0) {
-    showToast("희망 지역을 1개 이상 선택해주세요.");
+  const jobPart = jobPartInput.value.trim();
+  if (!jobPart) {
+    showToast("희망 직무를 입력해주세요.");
     return;
   }
 
   saveMemberAccount({ email, password, nickname });
   saveMemberPrefs({
-    user_job_part: Array.from(selectedJobParts),
-    user_region: Array.from(selectedRegions),
+    user_job_part: jobPart,
+    user_region: regionSelect.value,
     user_personal_history: document.getElementById("careerSelect").value,
     user_pay: document.getElementById("paySelect").value,
   });

@@ -1,16 +1,18 @@
 /* 취업 지원 서비스 - 공통 스타일 */
 :root {
-  --primary: #2f6fed;
-  --primary-dark: #1f52c4;
-  --bg: #f5f7fb;
+  --primary: #145D91;
+  --primary-dark: #173B6F;
+  --primary-light: #77B4E4;
+  --accent: #ECC815;
+  --bg: #EBF6FC;
   --card-bg: #ffffff;
-  --border: #e2e6ee;
-  --text: #1c2230;
-  --text-sub: #6b7280;
+  --border: rgba(119, 180, 228, 0.4);
+  --text: #162326;
+  --text-sub: rgba(22, 35, 38, 0.62);
   --danger: #e0503e;
   --success: #1a9e6a;
-  --jobkorea: #3f7ff2;
-  --saramin: #ff7a2f;
+  --jobkorea: #145D91;
+  --saramin: #8a6d0a;
   --radius: 10px;
 }
 
@@ -59,7 +61,7 @@ a { color: inherit; text-decoration: none; }
   font-weight: 500;
 }
 .nav-links a:hover { background: var(--bg); color: var(--text); }
-.nav-links a.active { background: #eaf1ff; color: var(--primary); }
+.nav-links a.active { background: rgba(20, 93, 145, 0.12); color: var(--primary-dark); }
 
 .container {
   max-width: 1080px;
@@ -140,6 +142,13 @@ a { color: inherit; text-decoration: none; }
 .field textarea { resize: vertical; min-height: 80px; }
 .field input:disabled,
 .field textarea:disabled { background: var(--bg); color: var(--text-sub); }
+.field input:focus,
+.field select:focus,
+.field textarea:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(236, 200, 21, 0.25);
+}
 
 .row { display: flex; gap: 12px; flex-wrap: wrap; }
 .row > * { flex: 1; min-width: 160px; }
@@ -152,8 +161,8 @@ a { color: inherit; text-decoration: none; }
   font-size: 12px;
   font-weight: 600;
 }
-.badge-jobkorea { background: #e8f0fe; color: var(--jobkorea); }
-.badge-saramin { background: #fff1e8; color: var(--saramin); }
+.badge-jobkorea { background: rgba(20, 93, 145, 0.12); color: var(--jobkorea); }
+.badge-saramin { background: rgba(236, 200, 21, 0.22); color: var(--saramin); }
 
 /* 토스트 / 알림 */
 .toast {
@@ -161,7 +170,7 @@ a { color: inherit; text-decoration: none; }
   bottom: 24px;
   left: 50%;
   transform: translateX(-50%) translateY(20px);
-  background: #1c2230;
+  background: var(--text);
   color: #fff;
   padding: 12px 20px;
   border-radius: 8px;

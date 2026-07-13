@@ -14,28 +14,9 @@ document.getElementById("portfolioName").textContent = `${portfolio.projectTitle
 
 // 희망 조건 로드
 const prefs = loadMemberPrefs();
-let selectedJobParts = new Set(prefs.user_job_part);
-let selectedRegions = new Set(prefs.user_region);
 
-const jobPartList = document.getElementById("jobPartList");
-const regionList = document.getElementById("regionList");
-
-function renderChips(container, options, selectedSet) {
-  container.innerHTML = "";
-  options.forEach((opt) => {
-    const chip = document.createElement("div");
-    chip.className = "chip" + (selectedSet.has(opt) ? " selected" : "");
-    chip.textContent = opt;
-    chip.addEventListener("click", () => {
-      if (selectedSet.has(opt)) selectedSet.delete(opt);
-      else selectedSet.add(opt);
-      renderChips(container, options, selectedSet);
-    });
-    container.appendChild(chip);
-  });
-}
-renderChips(jobPartList, POSITIONS, selectedJobParts);
-renderChips(regionList, REGION_OPTIONS, selectedRegions);
+const jobPartInput = document.getElementById("jobPartInput");
+const regionSelect = document.getElementById("regionSelect");
 
 function fillSelect(selectEl, options, currentValue) {
   selectEl.innerHTML = "";
@@ -47,15 +28,22 @@ function fillSelect(selectEl, options, currentValue) {
     selectEl.appendChild(el);
   });
 }
+jobPartInput.value = prefs.user_job_part || "";
+fillSelect(regionSelect, REGION_OPTIONS, prefs.user_region);
 fillSelect(document.getElementById("careerSelect"), CAREER_OPTIONS, prefs.user_personal_history);
 fillSelect(document.getElementById("eduSelect"), EDU_OPTIONS, prefs.user_edu_require);
 fillSelect(document.getElementById("empTypeSelect"), EMP_TYPE_OPTIONS, prefs.user_emp_type);
 fillSelect(document.getElementById("paySelect"), PAY_OPTIONS, prefs.user_pay);
 
 document.getElementById("savePrefsBtn").addEventListener("click", () => {
+  const jobPart = jobPartInput.value.trim();
+  if (!jobPart) {
+    showToast("희망 직무를 입력해주세요.");
+    return;
+  }
   const newPrefs = {
-    user_job_part: Array.from(selectedJobParts),
-    user_region: Array.from(selectedRegions),
+    user_job_part: jobPart,
+    user_region: regionSelect.value,
     user_personal_history: document.getElementById("careerSelect").value,
     user_edu_require: document.getElementById("eduSelect").value,
     user_emp_type: document.getElementById("empTypeSelect").value,
@@ -67,6 +55,9 @@ document.getElementById("savePrefsBtn").addEventListener("click", () => {
 
 document.getElementById("logoutBtn").addEventListener("click", () => {
   showToast("로그아웃되었습니다.");
+  setTimeout(() => {
+    window.location.href = "login.html";
+  }, 900);
 });
 
 document.getElementById("withdrawBtn").addEventListener("click", () => {
