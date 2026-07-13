@@ -85,7 +85,6 @@ function renderJobs() {
         <div class="job-top">
           <span class="badge ${job.source === "JOBKOREA" ? "badge-jobkorea" : "badge-saramin"}">${SOURCE_LABELS[job.source]}</span>
           <span class="job-company">${job.company_name}</span>
-          <span class="badge ${applyState === "APPLY" ? "badge-apply-done" : "badge-apply-pending"}">${APPLY_LABELS[applyState]}</span>
         </div>
         <div class="job-title">${job.post_title}</div>
         <div class="job-meta">
@@ -100,7 +99,7 @@ function renderJobs() {
       </div>
       <div class="job-actions">
         <button class="btn btn-sm" onclick="window.open('${job.job_url}', '_blank')">원문 보기 ↗</button>
-        <button class="btn btn-sm ${applyState === "APPLY" ? "" : "btn-primary"}" onclick="toggleApply('${job.post_id}')">${applyState === "APPLY" ? "지원 취소" : "지원 완료로 변경"}</button>
+        <button class="btn btn-sm ${applyState === "APPLY" ? "" : "btn-primary"}" onclick="toggleApply('${job.post_id}')">${applyState === "APPLY" ? "지원완료" : "지원하기"}</button>
       </div>
     `;
     jobList.appendChild(card);
