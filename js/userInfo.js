@@ -10,7 +10,7 @@ if (recentJob) {
 
 // portfolio_id FK -> 포트폴리오 요약
 const portfolio = loadPortfolio();
-document.getElementById("portfolioName").textContent = `${portfolio.projectTitle} (${portfolio.displayName})`;
+document.getElementById("portfolioName").textContent = `${portfolio.nickname} (${portfolio.portfolio_url})`;
 
 // 희망 조건 로드
 const prefs = loadMemberPrefs();
