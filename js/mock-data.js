@@ -140,27 +140,48 @@ const MOCK_MEMBER = {
   user_pay: "4,000~5,000만원",
 };
 
+// CNAME 제공 서비스로부터 받을 도메인 네임 (서비스 제작 중이라 임시 목데이터).
+// 완성되면 API 응답값으로 교체한다.
+const MOCK_CNAME_DOMAIN = "example.com";
+
 // ---- 포트폴리오 초기 목업 데이터 ----
+// portfolio.image_path, portfolio.html_path: 실 서버에서는 업로드된 파일이
+// /var/www/html/assets/{nickname}/ 아래 저장되고, DB에는 그 경로 문자열만 저장된다.
 const MOCK_PORTFOLIO = {
-  username: "doyeon",
-  displayName: "김도연",
-  intro: "사용자 중심의 프론트엔드를 고민하는 개발자입니다.",
-  skills: "React, TypeScript, JavaScript, HTML/CSS",
-  projectTitle: "취업 지원 서비스 MVP",
-  projectDescription: "잡코리아/사람인 공고 수집과 포트폴리오 관리를 한 곳에서 제공하는 3일 MVP 프로젝트입니다.",
-  githubUrl: "https://github.com/doyeon-kim",
-  contact: "doyeon.kim@example.com",
-  cnameValue: "service-domain.example.com",
+  nickname: "doyeon_kim",
+  cname: "portfolio",
+  portfolio_url: "pofile.greatsounds.me",
+  image_path: null,
+  html_path: null,
 };
 
 // ---- localStorage 헬퍼 (백엔드 연동 전 임시 저장소) ----
 
 function loadPortfolio() {
   const saved = localStorage.getItem("mvp_portfolio");
-  return saved ? JSON.parse(saved) : { ...MOCK_PORTFOLIO };
+  return saved ? { ...MOCK_PORTFOLIO, ...JSON.parse(saved) } : { ...MOCK_PORTFOLIO };
 }
 function savePortfolio(data) {
   localStorage.setItem("mvp_portfolio", JSON.stringify(data));
+}
+
+// 업로드 파일의 실제 내용은 DB가 아닌 파일 저장소(/var/www/html/assets/{nickname}/)에 있다고 가정.
+// 백엔드가 없는 프론트 데모 환경이라, 미리보기를 위해 파일 내용만 경로를 키로 별도 보관한다.
+function assetPathFor(nickname, filename) {
+  return `/var/www/html/assets/${nickname}/${filename}`;
+}
+function loadAssetStore() {
+  const saved = localStorage.getItem("mvp_portfolio_assets");
+  return saved ? JSON.parse(saved) : {};
+}
+function saveAsset(path, content) {
+  const store = loadAssetStore();
+  store[path] = content;
+  localStorage.setItem("mvp_portfolio_assets", JSON.stringify(store));
+}
+function getAsset(path) {
+  if (!path) return null;
+  return loadAssetStore()[path] || null;
 }
 
 // members 희망 조건 (user_job_part, user_region, user_personal_history, user_edu_require, user_emp_type, user_pay)
