@@ -25,23 +25,26 @@ const memberPrefs = loadMemberPrefs();
 POSITIONS.forEach((p) => {
   const opt = document.createElement("option");
   opt.value = p;
-  opt.textContent = p + (memberPrefs.user_job_part.includes(p) ? " (희망 직무)" : "");
+  opt.textContent = p + (p === memberPrefs.user_job_part ? " (희망 직무)" : "");
   jobPartFilter.appendChild(opt);
 });
-if (memberPrefs.user_job_part.length > 0) {
-  jobPartFilter.value = memberPrefs.user_job_part[0];
+if (memberPrefs.user_job_part) {
+  jobPartFilter.value = memberPrefs.user_job_part;
 }
 
 // 지역 필터 옵션 - 회원의 희망 지역(user_region) 우선 표시
 REGION_OPTIONS.forEach((r) => {
   const opt = document.createElement("option");
   opt.value = r;
-  opt.textContent = r + (memberPrefs.user_region.includes(r) ? " (희망 지역)" : "");
+  opt.textContent = r + (r === memberPrefs.user_region ? " (희망 지역)" : "");
   regionFilter.appendChild(opt);
 });
+if (memberPrefs.user_region) {
+  regionFilter.value = memberPrefs.user_region;
+}
 
 function daysLeft(deadline) {
-  const diff = Math.ceil((new Date(deadline) - new Date("2026-07-10")) / 86400000);
+  const diff = Math.ceil((new Date(deadline) - new Date()) / 86400000);
   return diff;
 }
 
@@ -64,7 +67,7 @@ function renderJobs() {
   const filtered = allJobs.filter((job) => {
     const matchSource = source === "all" || job.source === source;
     const matchJobPart = jobPart === "all" || job.job_part === jobPart;
-    const matchRegion = region === "all" || job.region.includes(region);
+    const matchRegion = region === "all" || region === "전국" || job.region.includes(region);
     return matchSource && matchJobPart && matchRegion;
   });
 

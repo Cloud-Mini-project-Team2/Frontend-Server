@@ -135,8 +135,8 @@ const MOCK_MEMBER = {
   email: "doyeon.kim@example.com",
   password: "********", // 비밀번호는 화면에 노출하지 않음 (해시 저장 가정)
   nickname: "doyeon_kim",
-  user_job_part: ["프론트엔드 개발자", "풀스택 개발자"],
-  user_region: ["서울"],
+  user_job_part: "프론트엔드 개발자",
+  user_region: "서울",
   user_personal_history: "경력무관",
   user_edu_require: "학력무관",
   user_emp_type: "정규직",
@@ -169,7 +169,14 @@ function savePortfolio(data) {
 // members 희망 조건 (user_job_part, user_region, user_personal_history, user_edu_require, user_emp_type, user_pay)
 function loadMemberPrefs() {
   const saved = localStorage.getItem("mvp_member_prefs");
-  if (saved) return JSON.parse(saved);
+  if (saved) {
+    const prefs = JSON.parse(saved);
+    return {
+      user_edu_require: EDU_OPTIONS[0],
+      user_emp_type: EMP_TYPE_OPTIONS[0],
+      ...prefs,
+    };
+  }
   const {
     user_job_part, user_region, user_personal_history,
     user_edu_require, user_emp_type, user_pay,
