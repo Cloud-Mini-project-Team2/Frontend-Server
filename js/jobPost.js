@@ -3,13 +3,9 @@ const jobPartFilter = document.getElementById("jobPartFilter");
 const regionFilter = document.getElementById("regionFilter");
 const jobList = document.getElementById("jobList");
 const emptyState = document.getElementById("emptyState");
-const collectStatus = document.getElementById("collectStatus");
-const collectBtn = document.getElementById("collectBtn");
-const failBanner = document.getElementById("failBanner");
 
-// 전체 수집 결과 (post_id UNIQUE 제약을 흉내내기 위해 배열로 관리)
-let allJobs = [...MOCK_JOBS];
-let collectStep = 0;
+// 서버에서 받아온 현재 페이지의 공고 목록 (source 필터는 화면에서만 적용)
+let allJobs = [];
 
 // 출처(source) 필터 옵션 - DB값은 영문(JOBKOREA/SARAMIN), 화면은 한글 표기
 Object.entries(SOURCE_LABELS).forEach(([value, label]) => {
@@ -19,54 +15,42 @@ Object.entries(SOURCE_LABELS).forEach(([value, label]) => {
   sourceFilter.appendChild(opt);
 });
 
-// 직무 필터 옵션 - 회원의 희망 직무(user_job_part)를 우선 표시
-const memberPrefs = loadMemberPrefs();
-POSITIONS.forEach((p) => {
-  const opt = document.createElement("option");
-  opt.value = p;
-  opt.textContent = p + (p === memberPrefs.user_job_part ? " (희망 직무)" : "");
-  jobPartFilter.appendChild(opt);
-});
-if (memberPrefs.user_job_part) {
-  jobPartFilter.value = memberPrefs.user_job_part;
-}
-
-// 지역 필터 옵션 - 회원의 희망 지역(user_region) 우선 표시
-REGION_OPTIONS.forEach((r) => {
-  const opt = document.createElement("option");
-  opt.value = r;
-  opt.textContent = r + (r === memberPrefs.user_region ? " (희망 지역)" : "");
-  regionFilter.appendChild(opt);
-});
-if (memberPrefs.user_region) {
-  regionFilter.value = memberPrefs.user_region;
-}
-
 function daysLeft(deadline) {
   const diff = Math.ceil((new Date(deadline) - new Date()) / 86400000);
   return diff;
 }
 
-function getApplyState(job) {
-  return getApplyStatus(job.job_id);
+async function loadJobs() {
+  const params = new URLSearchParams({ page: "1", size: "100" });
+  const jobPart = jobPartFilter.value;
+  const region = regionFilter.value;
+  if (jobPart && jobPart !== "all") params.set("job_part", jobPart);
+  if (region && region !== "all" && region !== "전국") params.set("region", region);
+
+  try {
+    const data = await apiRequest(`/jobs?${params.toString()}`);
+    allJobs = data.jobs;
+    renderJobs();
+  } catch (err) {
+    showToast(err.message);
+  }
 }
 
-function toggleApply(jobId) {
-  toggleApplyStatus(jobId);
-  renderJobs();
+async function toggleApply(postId) {
+  try {
+    const result = await apiRequest(`/jobs/${encodeURIComponent(postId)}/apply`, { method: "PATCH" });
+    const job = allJobs.find((j) => j.post_id === postId);
+    if (job) job.my_apply_status = result.apply;
+    renderJobs();
+  } catch (err) {
+    showToast(err.message);
+  }
 }
 
 function renderJobs() {
   const source = sourceFilter.value;
-  const jobPart = jobPartFilter.value;
-  const region = regionFilter.value;
 
-  const filtered = allJobs.filter((job) => {
-    const matchSource = source === "all" || job.source === source;
-    const matchJobPart = jobPart === "all" || job.job_part === jobPart;
-    const matchRegion = region === "all" || region === "전국" || job.region.includes(region);
-    return matchSource && matchJobPart && matchRegion;
-  });
+  const filtered = allJobs.filter((job) => source === "all" || job.source === source);
 
   jobList.innerHTML = "";
   if (filtered.length === 0) {
@@ -77,13 +61,13 @@ function renderJobs() {
 
   filtered.forEach((job) => {
     const left = daysLeft(job.end_at);
-    const applyState = getApplyState(job);
+    const applyState = job.my_apply_status;
     const card = document.createElement("div");
     card.className = "card job-card";
     card.innerHTML = `
       <div class="job-main">
         <div class="job-top">
-          <span class="badge badge-${job.source.toLowerCase()}">${SOURCE_LABELS[job.source]}</span>
+          <span class="badge badge-${job.source.toLowerCase()}">${SOURCE_LABELS[job.source] || job.source}</span>
           <span class="job-company">${job.company_name}</span>
         </div>
         <div class="job-title">${job.post_title}</div>
@@ -97,7 +81,7 @@ function renderJobs() {
       </div>
       <div class="job-actions">
         <button class="btn btn-sm" onclick="window.open('${job.job_url}', '_blank')">원문 보기 ↗</button>
-        <button class="btn btn-sm ${applyState === "APPLY" ? "" : "btn-primary"}" onclick="toggleApply(${job.job_id})">${applyState === "APPLY" ? "지원완료" : "지원하기"}</button>
+        <button class="btn btn-sm ${applyState === "APPLY" ? "" : "btn-primary"}" onclick="toggleApply('${job.post_id}')">${applyState === "APPLY" ? "지원완료" : "지원하기"}</button>
       </div>
     `;
     jobList.appendChild(card);
@@ -105,33 +89,34 @@ function renderJobs() {
 }
 
 sourceFilter.addEventListener("change", renderJobs);
-jobPartFilter.addEventListener("change", renderJobs);
-regionFilter.addEventListener("change", renderJobs);
+jobPartFilter.addEventListener("change", loadJobs);
+regionFilter.addEventListener("change", loadJobs);
 
-collectBtn.addEventListener("click", () => {
-  failBanner.style.display = "none";
-  collectStatus.textContent = "수집 중...";
-  collectBtn.disabled = true;
-  setTimeout(() => {
-    collectBtn.disabled = false;
-    collectStatus.textContent = "";
-    collectStep += 1;
-    const next = EXTRA_JOBS_POOL[collectStep - 1];
+(async function init() {
+  const me = await requireLogin();
+  if (!me) return;
 
-    if (!next) {
-      showToast("새로운 공고가 없습니다.");
-      return;
-    }
+  // 직무 필터 옵션 - 회원의 희망 직무(user_job_part)를 우선 표시
+  POSITIONS.forEach((p) => {
+    const opt = document.createElement("option");
+    opt.value = p;
+    opt.textContent = p + (p === me.user_job_part ? " (희망 직무)" : "");
+    jobPartFilter.appendChild(opt);
+  });
+  if (me.user_job_part) {
+    jobPartFilter.value = me.user_job_part;
+  }
 
-    const isDuplicate = allJobs.some((j) => j.post_id === next.post_id);
-    if (isDuplicate) {
-      showToast(`중복 공고 제거됨 (post_id: ${next.post_id})`);
-    } else {
-      allJobs.push({ ...next, crawled_at: "2026-07-10" });
-      renderJobs();
-      showToast(`신규 공고 ${next.company_name} - ${next.post_title} 수집 완료`);
-    }
-  }, 700);
-});
+  // 지역 필터 옵션 - 회원의 희망 지역(user_region) 우선 표시
+  REGION_OPTIONS.forEach((r) => {
+    const opt = document.createElement("option");
+    opt.value = r;
+    opt.textContent = r + (r === me.user_region ? " (희망 지역)" : "");
+    regionFilter.appendChild(opt);
+  });
+  if (me.user_region) {
+    regionFilter.value = me.user_region;
+  }
 
-renderJobs();
+  await loadJobs();
+})();

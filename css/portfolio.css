@@ -48,6 +48,15 @@
 .mode-actions { display: flex; gap: 8px; }
 #editSection { display: none; }
 
+.readonly-value {
+  padding: 9px 12px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--bg);
+  font-size: 14px;
+  color: var(--text-sub);
+}
+
 /* 첨부 이미지 / HTML 미리보기 */
 .empty-hint {
   color: var(--text-sub);

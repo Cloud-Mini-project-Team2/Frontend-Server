@@ -24,8 +24,6 @@
   <h1 class="page-title">채용 공고</h1>
   <p class="page-desc">잡코리아에서 수집한 채용 공고를 희망 조건 기준으로 확인해보세요.</p>
 
-  <div id="failBanner" class="fail-banner">공고 수집에 실패했습니다. 샘플 데이터로 대체하여 표시합니다.</div>
-
   <div class="card">
     <div class="filter-bar">
       <select id="sourceFilter">
@@ -37,9 +35,7 @@
       <select id="regionFilter">
         <option value="all">전체 지역</option>
       </select>
-      <span class="collect-status" id="collectStatus"></span>
       <div class="spacer"></div>
-      <button class="btn btn-primary" id="collectBtn">공고 수집하기</button>
     </div>
 
     <div class="job-list" id="jobList"></div>
@@ -47,7 +43,8 @@
   </div>
 </div>
 
-<script src="js/mock-data.js"></script>
+<script src="js/common.js"></script>
+<script src="js/api.js"></script>
 <script src="js/jobPost.js"></script>
 
 </body>

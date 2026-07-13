@@ -1,53 +1,38 @@
-let portfolio = loadPortfolio();
+let profile = null;
 let pendingImageFile = null;
-let pendingHtmlFile = null;
+let pendingFile = null;
 
 const viewSection = document.getElementById("viewSection");
 const editSection = document.getElementById("editSection");
-
-function readFileAsDataUrl(file) {
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.onload = () => resolve(reader.result);
-    reader.onerror = () => reject(reader.error);
-    reader.readAsDataURL(file);
-  });
-}
-
-function readFileAsText(file) {
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.onload = () => resolve(reader.result);
-    reader.onerror = () => reject(reader.error);
-    reader.readAsText(file);
-  });
-}
 
 // CNAME 레코드의 값: "{cname}.{도메인 네임}".
 // 도메인 네임은 CNAME 제공 서비스에서 받을 값이라 지금은 목데이터(MOCK_CNAME_DOMAIN)를 쓴다.
 // 예) cname=portfolio -> portfolio.example.com
 function buildCnameFullDomain() {
-  if (!portfolio.cname) return "";
-  return `${portfolio.cname}.${MOCK_CNAME_DOMAIN}`;
+  if (!profile.cname) return "-";
+  return `${profile.cname}.${MOCK_CNAME_DOMAIN}`;
+}
+
+// 스킴 없이 입력된 URL(pofile.greatsounds.me 등)이 상대경로로 처리되지 않게 보정
+function toAbsoluteUrl(url) {
+  return /^https?:\/\//.test(url) ? url : `https://${url}`;
 }
 
 function renderView() {
-  document.getElementById("avatarInitial").textContent = portfolio.nickname.charAt(0);
-  document.getElementById("viewNickname").textContent = portfolio.nickname;
+  document.getElementById("avatarInitial").textContent = profile.nickname.charAt(0).toUpperCase();
+  document.getElementById("viewNickname").textContent = profile.nickname;
+
   const urlEl = document.getElementById("viewPortfolioUrl");
-  urlEl.textContent = portfolio.portfolio_url;
-  // 스킴 없이 입력된 URL(pofile.greatsounds.me 등)이 상대경로로 처리되지 않게 보정
-  urlEl.href = portfolio.portfolio_url
-    ? (/^https?:\/\//.test(portfolio.portfolio_url) ? portfolio.portfolio_url : `https://${portfolio.portfolio_url}`)
-    : "#";
-  document.getElementById("viewCname").textContent = portfolio.cname;
+  urlEl.textContent = profile.portfolio_url || "-";
+  urlEl.href = profile.portfolio_url ? toAbsoluteUrl(profile.portfolio_url) : "#";
+
+  document.getElementById("viewCname").textContent = profile.cname || "-";
   document.getElementById("viewCnameFull").textContent = buildCnameFullDomain();
 
   const viewImage = document.getElementById("viewImage");
   const viewImageEmpty = document.getElementById("viewImageEmpty");
-  const imageData = getAsset(portfolio.portfolio_img);
-  if (imageData) {
-    viewImage.src = imageData;
+  if (profile.portfolio_img) {
+    viewImage.src = profile.portfolio_img;
     viewImage.style.display = "block";
     viewImageEmpty.style.display = "none";
   } else {
@@ -58,41 +43,39 @@ function renderView() {
 
   const viewHtmlPreview = document.getElementById("viewHtmlPreview");
   const viewHtmlEmpty = document.getElementById("viewHtmlEmpty");
-  const htmlData = getAsset(portfolio.portfolio_file);
-  if (htmlData) {
-    viewHtmlPreview.srcdoc = htmlData;
+  if (profile.portfolio_file) {
+    viewHtmlPreview.src = profile.portfolio_file;
     viewHtmlPreview.style.display = "block";
     viewHtmlEmpty.style.display = "none";
   } else {
-    viewHtmlPreview.removeAttribute("srcdoc");
+    viewHtmlPreview.removeAttribute("src");
     viewHtmlPreview.style.display = "none";
     viewHtmlEmpty.style.display = "block";
   }
 }
 
 function fillEditForm() {
-  document.getElementById("inputNickname").value = portfolio.nickname;
-  document.getElementById("inputPortfolioUrl").value = portfolio.portfolio_url;
-  document.getElementById("inputCname").value = portfolio.cname;
+  document.getElementById("viewEditNickname").textContent = profile.nickname;
+  document.getElementById("inputPortfolioUrl").value = profile.portfolio_url || "";
+  document.getElementById("inputCname").value = profile.cname || "";
 
   pendingImageFile = null;
-  pendingHtmlFile = null;
+  pendingFile = null;
   document.getElementById("inputImage").value = "";
   document.getElementById("inputHtml").value = "";
 
   const imagePreview = document.getElementById("imagePreview");
-  const existingImage = getAsset(portfolio.portfolio_img);
-  if (existingImage) {
-    imagePreview.src = existingImage;
+  if (profile.portfolio_img) {
+    imagePreview.src = profile.portfolio_img;
     imagePreview.style.display = "block";
   } else {
     imagePreview.removeAttribute("src");
     imagePreview.style.display = "none";
   }
 
-  document.getElementById("htmlCurrentName").textContent = portfolio.portfolio_file
-    ? `현재 파일: ${portfolio.portfolio_file.split("/").pop()}`
-    : "등록된 HTML 파일이 없습니다.";
+  document.getElementById("htmlCurrentName").textContent = profile.portfolio_file
+    ? `현재 파일: ${profile.portfolio_file.split("/").pop()}`
+    : "등록된 파일이 없습니다.";
 }
 
 document.getElementById("editBtn").addEventListener("click", () => {
@@ -109,49 +92,56 @@ document.getElementById("cancelBtn").addEventListener("click", () => {
 document.getElementById("inputImage").addEventListener("change", (e) => {
   pendingImageFile = e.target.files[0] || null;
   if (!pendingImageFile) return;
-  readFileAsDataUrl(pendingImageFile).then((dataUrl) => {
-    const imagePreview = document.getElementById("imagePreview");
-    imagePreview.src = dataUrl;
-    imagePreview.style.display = "block";
-  });
+  const imagePreview = document.getElementById("imagePreview");
+  imagePreview.src = URL.createObjectURL(pendingImageFile);
+  imagePreview.style.display = "block";
 });
 
 document.getElementById("inputHtml").addEventListener("change", (e) => {
-  pendingHtmlFile = e.target.files[0] || null;
-  document.getElementById("htmlCurrentName").textContent = pendingHtmlFile
-    ? `선택된 파일: ${pendingHtmlFile.name}`
-    : (portfolio.portfolio_file ? `현재 파일: ${portfolio.portfolio_file.split("/").pop()}` : "등록된 HTML 파일이 없습니다.");
+  pendingFile = e.target.files[0] || null;
+  document.getElementById("htmlCurrentName").textContent = pendingFile
+    ? `선택된 파일: ${pendingFile.name}`
+    : (profile.portfolio_file ? `현재 파일: ${profile.portfolio_file.split("/").pop()}` : "등록된 파일이 없습니다.");
 });
 
 document.getElementById("saveBtn").addEventListener("click", async () => {
-  const nickname = document.getElementById("inputNickname").value.trim() || portfolio.nickname;
-  const updated = {
-    ...portfolio,
-    nickname,
-    portfolio_url: document.getElementById("inputPortfolioUrl").value.trim(),
-    cname: document.getElementById("inputCname").value.trim(),
-  };
+  const cname = document.getElementById("inputCname").value.trim();
+  const portfolioUrl = document.getElementById("inputPortfolioUrl").value.trim();
 
-  // 실 서버에서는 업로드된 파일이 /var/www/html/assets/{nickname}/ 에 저장되고
-  // DB(portfolio)에는 그 경로만 기록된다. 여기서는 파일 내용을 경로를 키로 하는
-  // 별도 저장소(mvp_portfolio_assets)에 넣어 미리보기를 시뮬레이션한다.
-  if (pendingImageFile) {
-    const path = assetPathFor(nickname, pendingImageFile.name);
-    saveAsset(path, await readFileAsDataUrl(pendingImageFile));
-    updated.portfolio_img = path;
-  }
-  if (pendingHtmlFile) {
-    const path = assetPathFor(nickname, pendingHtmlFile.name);
-    saveAsset(path, await readFileAsText(pendingHtmlFile));
-    updated.portfolio_file = path;
-  }
+  try {
+    if (pendingImageFile || pendingFile) {
+      const formData = new FormData();
+      if (pendingImageFile) formData.append("image", pendingImageFile);
+      if (pendingFile) formData.append("file", pendingFile);
+      const uploadResult = await apiRequest("/users/me/portfolio", {
+        method: "POST",
+        body: formData,
+        isFormData: true,
+      });
+      if (uploadResult.portfolio_img) profile.portfolio_img = uploadResult.portfolio_img;
+      if (uploadResult.portfolio_file) profile.portfolio_file = uploadResult.portfolio_file;
+    }
 
-  portfolio = updated;
-  savePortfolio(portfolio);
-  renderView();
-  editSection.style.display = "none";
-  viewSection.style.display = "block";
-  showToast("포트폴리오가 저장되었습니다.");
+    if (cname) {
+      const cnameResult = await apiRequest("/users/me/cname", {
+        method: "PUT",
+        body: { cname, portfolio_url: portfolioUrl || null },
+      });
+      profile.cname = cnameResult.cname;
+      profile.portfolio_url = cnameResult.portfolio_url;
+    }
+
+    renderView();
+    editSection.style.display = "none";
+    viewSection.style.display = "block";
+    showToast("포트폴리오가 저장되었습니다.");
+  } catch (err) {
+    showToast(err.message);
+  }
 });
 
-renderView();
+(async function init() {
+  profile = await requireLogin();
+  if (!profile) return;
+  renderView();
+})();
