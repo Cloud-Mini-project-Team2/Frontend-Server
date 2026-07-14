@@ -14,7 +14,7 @@ fillSelect(regionSelect, REGION_OPTIONS);
 fillSelect(document.getElementById("careerSelect"), CAREER_OPTIONS);
 fillSelect(document.getElementById("paySelect"), PAY_OPTIONS);
 
-document.getElementById("signupBtn").addEventListener("click", () => {
+document.getElementById("signupBtn").addEventListener("click", async () => {
   const email = document.getElementById("inputEmail").value.trim();
   const password = document.getElementById("inputPassword").value;
   const nickname = document.getElementById("inputNickname").value.trim();
@@ -40,16 +40,25 @@ document.getElementById("signupBtn").addEventListener("click", () => {
     return;
   }
 
-  saveMemberAccount({ email, password, nickname });
-  saveMemberPrefs({
-    user_job_part: jobPart,
-    user_region: regionSelect.value,
-    user_personal_history: document.getElementById("careerSelect").value,
-    user_pay: document.getElementById("paySelect").value,
-  });
+  try {
+    await apiRequest("/auth/signup", {
+      method: "POST",
+      body: {
+        email,
+        password,
+        nickname,
+        user_job_part: jobPart,
+        user_region: regionSelect.value,
+        user_personal_history: document.getElementById("careerSelect").value,
+        user_pay: document.getElementById("paySelect").value,
+      },
+    });
 
-  showToast("회원가입이 완료되었습니다.");
-  setTimeout(() => {
-    window.location.href = "userInfo.html";
-  }, 900);
+    showToast("회원가입이 완료되었습니다. 로그인해주세요.");
+    setTimeout(() => {
+      window.location.href = "login.html";
+    }, 900);
+  } catch (err) {
+    showToast(err.message);
+  }
 });

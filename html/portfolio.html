@@ -31,19 +31,27 @@
       <div class="profile-info">
         <div class="avatar" id="avatarInitial">?</div>
         <div>
-          <div class="profile-name" id="viewName"></div>
-          <div class="profile-url">공개 URL: <a id="viewUrl" href="#" target="_blank"></a></div>
+          <div class="profile-name" id="viewNickname"></div>
+          <div class="profile-url">포트폴리오 URL: <a id="viewPortfolioUrl" href="#" target="_blank"></a></div>
         </div>
       </div>
       <button class="btn btn-primary" id="editBtn">편집</button>
     </div>
 
-    <div class="view-row"><div class="label">소개 문구</div><div class="value" id="viewIntro"></div></div>
-    <div class="view-row"><div class="label">기술 스택</div><div class="value" id="viewSkills"></div></div>
-    <div class="view-row"><div class="label">프로젝트명</div><div class="value" id="viewProjectTitle"></div></div>
-    <div class="view-row"><div class="label">프로젝트 설명</div><div class="value" id="viewProjectDesc"></div></div>
-    <div class="view-row"><div class="label">GitHub</div><div class="value"><a id="viewGithub" href="#" target="_blank"></a></div></div>
-    <div class="view-row"><div class="label">연락처</div><div class="value" id="viewContact"></div></div>
+    <div class="view-row">
+      <div class="label">첨부 이미지</div>
+      <div class="value">
+        <img id="viewImage" class="portfolio-image" alt="첨부 이미지 미리보기">
+        <span class="empty-hint" id="viewImageEmpty">등록된 이미지가 없습니다.</span>
+      </div>
+    </div>
+    <div class="view-row">
+      <div class="label">HTML 미리보기</div>
+      <div class="value">
+        <iframe id="viewHtmlPreview" class="portfolio-html-preview" title="포트폴리오 HTML 미리보기" sandbox=""></iframe>
+        <span class="empty-hint" id="viewHtmlEmpty">등록된 HTML 파일이 없습니다.</span>
+      </div>
+    </div>
   </div>
 
   <div class="card" style="margin-top:16px;">
@@ -51,8 +59,8 @@
     <p class="page-desc" style="margin-bottom:8px;">아래 값을 도메인 관리 사이트의 DNS 설정에 CNAME 레코드로 등록하면 개인 도메인으로 포트폴리오에 접속할 수 있습니다.</p>
     <table class="cname-table">
       <tr><th>타입</th><td>CNAME</td></tr>
-      <tr><th>이름</th><td>portfolio</td></tr>
-      <tr><th>값</th><td id="viewCname"></td></tr>
+      <tr><th>이름</th><td id="viewCname"></td></tr>
+      <tr><th>값</th><td id="viewCnameFull"></td></tr>
     </table>
   </div>
 
@@ -67,43 +75,34 @@
     </div>
 
     <div class="field">
-      <label for="inputName">이름</label>
-      <input type="text" id="inputName">
+      <label>닉네임</label>
+      <div class="readonly-value" id="viewEditNickname"></div>
     </div>
     <div class="field">
-      <label for="inputIntro">소개 문구</label>
-      <textarea id="inputIntro"></textarea>
+      <label for="inputPortfolioUrl">포트폴리오 URL</label>
+      <input type="text" id="inputPortfolioUrl">
     </div>
     <div class="field">
-      <label for="inputSkills">기술 스택 (쉼표로 구분)</label>
-      <input type="text" id="inputSkills">
-    </div>
-    <div class="row">
-      <div class="field">
-        <label for="inputProjectTitle">프로젝트명</label>
-        <input type="text" id="inputProjectTitle">
-      </div>
-      <div class="field">
-        <label for="inputGithub">GitHub 링크</label>
-        <input type="text" id="inputGithub">
-      </div>
-    </div>
-    <div class="field">
-      <label for="inputProjectDesc">프로젝트 설명</label>
-      <textarea id="inputProjectDesc"></textarea>
-    </div>
-    <div class="field">
-      <label for="inputContact">연락처</label>
-      <input type="text" id="inputContact">
-    </div>
-    <div class="field">
-      <label for="inputCname">개인 도메인 CNAME 값</label>
+      <label for="inputCname">CNAME 이름 (예: portfolio)</label>
       <input type="text" id="inputCname">
+    </div>
+    <div class="field">
+      <label for="inputImage">이미지 첨부</label>
+      <input type="file" id="inputImage" accept="image/*">
+      <div class="file-preview">
+        <img id="imagePreview" class="portfolio-image">
+      </div>
+    </div>
+    <div class="field">
+      <label for="inputHtml">HTML 파일 첨부</label>
+      <input type="file" id="inputHtml" accept=".html,text/html">
+      <div class="file-current" id="htmlCurrentName"></div>
     </div>
   </div>
 </div>
 
-<script src="js/mock-data.js"></script>
+<script src="js/common.js"></script>
+<script src="js/api.js"></script>
 <script src="js/portfolio.js"></script>
 
 </body>

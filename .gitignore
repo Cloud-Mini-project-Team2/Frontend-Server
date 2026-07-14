@@ -3,3 +3,4 @@ fastapi_app/
 setup_nginx.sh
 setup_nginx.md
 fastapi_open_sv_edit.sh
+backend-server

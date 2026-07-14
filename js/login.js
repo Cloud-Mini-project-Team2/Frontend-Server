@@ -1,4 +1,4 @@
-function submitLogin() {
+async function submitLogin() {
   const email = document.getElementById("inputEmail").value.trim();
   const password = document.getElementById("inputPassword").value;
 
@@ -13,16 +13,15 @@ function submitLogin() {
     return;
   }
 
-  const account = loadMemberAccount();
-  if (email !== account.email || password !== account.password) {
-    showToast("이메일 또는 비밀번호가 일치하지 않습니다.");
-    return;
+  try {
+    await apiRequest("/auth/login", { method: "POST", body: { email, password } });
+    showToast("로그인되었습니다.");
+    setTimeout(() => {
+      window.location.href = "userInfo.html";
+    }, 900);
+  } catch (err) {
+    showToast(err.message);
   }
-
-  showToast("로그인되었습니다.");
-  setTimeout(() => {
-    window.location.href = "userInfo.html";
-  }, 900);
 }
 
 document.getElementById("loginBtn").addEventListener("click", submitLogin);
