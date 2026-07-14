@@ -31,8 +31,6 @@ function fillSelect(selectEl, options, currentValue) {
 jobPartInput.value = prefs.user_job_part || "";
 fillSelect(regionSelect, REGION_OPTIONS, prefs.user_region);
 fillSelect(document.getElementById("careerSelect"), CAREER_OPTIONS, prefs.user_personal_history);
-fillSelect(document.getElementById("eduSelect"), EDU_OPTIONS, prefs.user_edu_require);
-fillSelect(document.getElementById("empTypeSelect"), EMP_TYPE_OPTIONS, prefs.user_emp_type);
 fillSelect(document.getElementById("paySelect"), PAY_OPTIONS, prefs.user_pay);
 
 document.getElementById("savePrefsBtn").addEventListener("click", () => {
@@ -45,8 +43,6 @@ document.getElementById("savePrefsBtn").addEventListener("click", () => {
     user_job_part: jobPart,
     user_region: regionSelect.value,
     user_personal_history: document.getElementById("careerSelect").value,
-    user_edu_require: document.getElementById("eduSelect").value,
-    user_emp_type: document.getElementById("empTypeSelect").value,
     user_pay: document.getElementById("paySelect").value,
   };
   saveMemberPrefs(newPrefs);

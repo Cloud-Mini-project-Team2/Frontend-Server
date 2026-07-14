@@ -31,6 +31,7 @@
 |---|---|---|
 | 회원가입 | `html/signUp.html` | 계정 정보 및 희망 근무 조건 입력 |
 | 로그인 | `html/login.html` | 로그인 (httpOnly 쿠키 세션) |
+| 대시보드 | `html/dashboard.html` | 지원 현황 통계, 희망 조건 요약, 추천 채용 공고 |
 | 채용 공고 | `html/jobPost.html` | 사람인/잡코리아 등에서 크롤링된 채용 공고 목록 및 지원 |
 | 포트폴리오 | `html/portfolio.html` | 포트폴리오 작성/수정 |
 | 마이페이지 | `html/userInfo.html` | 내 정보 및 지원 현황 관리 |

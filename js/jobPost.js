@@ -93,8 +93,6 @@ function renderJobs() {
         <div class="job-meta">
           <span>📍 ${job.region}</span>
           <span>🧑‍💻 ${job.personal_history}</span>
-          <span>🎓 ${job.edu_require}</span>
-          <span>🏢 ${job.emp_type}</span>
           <span>💰 ${job.pay}</span>
           <span class="${left <= 7 ? "deadline-soon" : ""}">⏰ 마감 ${job.end_at}${left >= 0 ? ` (D-${left})` : ""}</span>
           <span>🏷 ${job.job_part}</span>
