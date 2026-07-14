@@ -15,6 +15,7 @@ async function submitLogin() {
 
   try {
     await apiRequest("/auth/login", { method: "POST", body: { email, password } });
+    runCrawler(); // 로그인 성공 시 크롤링 1회 실행 (응답을 기다리지 않음)
     showToast("로그인되었습니다.");
     setTimeout(() => {
       window.location.href = "userInfo.html";

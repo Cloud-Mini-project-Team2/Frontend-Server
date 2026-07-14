@@ -57,7 +57,8 @@ function fillSelect(selectEl, options, currentValue) {
           user_pay: document.getElementById("userPaySelect").value,
         },
       });
-      showToast("희망 근무 조건이 저장되었습니다.");
+      alert("정보가 수정되었습니다. 크롤링을 다시 실행합니다.");
+      runCrawler(); // 변경된 희망 조건 기준으로 크롤링 재실행
     } catch (err) {
       showToast(err.message);
     }

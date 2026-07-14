@@ -35,6 +35,20 @@ async function apiRequest(path, { method = "GET", body, isFormData = false } = {
   return payload ? payload.data : null;
 }
 
+// 채용 공고 크롤링 실행 트리거. 크롤러 자체는 백엔드(WAS)에 구현되어 있고
+// 여기서는 실행 요청만 보낸다. keepalive: 로그인 직후처럼 페이지 이동이
+// 이어지는 상황에서도 요청이 취소되지 않도록 한다. 크롤링은 부가 동작이므로
+// 실패해도 화면 흐름을 막지 않는다.
+function runCrawler() {
+  return fetch(`${API_BASE}/jobs/crawl`, {
+    method: "POST",
+    credentials: "include",
+    keepalive: true,
+  }).catch((err) => {
+    console.warn("크롤링 실행 요청 실패:", err);
+  });
+}
+
 // 로그인 필요 페이지 진입 시 세션 확인. 미인증이면 로그인 페이지로 보내고 null 반환.
 async function requireLogin() {
   try {
