@@ -37,7 +37,10 @@ function fillSelect(selectEl, options, currentValue) {
   // 희망 조건 폼 채우기 - 직무/지역은 복수 선택 Chip, 저장된 값(쉼표 구분)으로 초기 선택
   const selectedUserJobParts = new Set(parsePrefList(me.user_job_part));
   const selectedUserRegions = new Set(parsePrefList(me.user_region));
-  renderChips(document.getElementById("userJobPartList"), POSITIONS, selectedUserJobParts);
+  // 과거 텍스트 입력으로 저장된 직무 값(POSITIONS에 없는 값)도 Chip으로
+  // 표시해 선택 해제 전까지 유실되지 않도록 옵션에 포함한다.
+  const jobPartOptions = [...new Set([...POSITIONS, ...selectedUserJobParts])];
+  renderChips(document.getElementById("userJobPartList"), jobPartOptions, selectedUserJobParts);
   renderChips(document.getElementById("userRegionList"), REGION_OPTIONS, selectedUserRegions);
   fillSelect(document.getElementById("userCareerSelect"), CAREER_OPTIONS, me.user_personal_history);
   fillSelect(document.getElementById("userPaySelect"), PAY_OPTIONS, me.user_pay);
